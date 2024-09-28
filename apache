@@ -1,0 +1,35 @@
+
+apache httpd-vshosts.conf add these lines at end
+
+<VirtualHost *:80>
+    ServerName localhost
+
+    # Enable proxy modules
+    ProxyRequests Off
+    ProxyPreserveHost On
+
+    # Proxy _next assets (required for serving static Next.js assets)
+    ProxyPass /_next http://10.10.29.217/_next
+    ProxyPassReverse /_next http://10.10.29.217/_next
+
+    # Proxy static assets (if you have a /static folder for other assets)
+    ProxyPass /static http://10.10.29.217/static
+    ProxyPassReverse /static http://10.10.29.217/static
+
+    # Proxy all requests to Next.js, not just /innovations
+    ProxyPass / http://10.10.29.217/
+    ProxyPassReverse / http://10.10.29.217/
+
+    # Logging for debugging
+    ErrorLog "logs/innovations-error.log"
+    CustomLog "logs/innovations-access.log" common
+
+</VirtualHost>
+
+
+apache httpd.conf
+
+uncomment
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
