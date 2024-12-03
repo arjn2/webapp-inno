@@ -3,8 +3,6 @@
 # Set variables
 MASTER_IP="10.10.29.217"
 WORKER_IP="10.10.29.219"
-MASTER_HOST="Pi01"
-WORKER_HOST="Pi02"
 IMAGE_NAME="webapp-credits"
 IMAGE_TAG="latest"
 TAR_NAME="${IMAGE_NAME}.tar"
@@ -21,11 +19,11 @@ loading_bar() {
     printf "\n"
 }
 
-# # Build the Docker image
-# echo "Building Docker image..."
-# loading_bar 0.1 "Building image" &
-# sudo docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-# kill $! 2>/dev/null
+# Build the Docker image
+echo "Building Docker image..."
+loading_bar 0.1 "Building image" &
+sudo docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+kill $! 2>/dev/null
 
 # Save the Docker image
 echo "Saving Docker image to tar file..."
@@ -42,33 +40,37 @@ kill $! 2>/dev/null
 # Import image and deploy on master node
 echo "Deploying to K3s master node..."
 loading_bar 0.1 "Deploying to master" &
-ssh head@${MASTER_IP} "
-    sudo k3s ctr images import /home/head/${TAR_NAME} && \
-    sudo kubectl delete deployment webapp --ignore-not-found=true && \
-    sudo kubectl apply -f /home/head/webd.yaml"
+ssh head@${MASTER_IP} << 'EOF'
+    sudo -S k3s ctr images import /home/head/${TAR_NAME}
+    sudo -S kubectl delete deployment webapp --ignore-not-found=true
+    sudo -S kubectl apply -f /home/head/webd.yaml
+EOF
 kill $! 2>/dev/null
 
 # Import image to worker node
 echo "Importing image to worker node..."
 loading_bar 0.1 "Worker node import" &
 scp ${TAR_NAME} head@${WORKER_IP}:/home/head/ && \
-ssh head@${WORKER_IP} "sudo k3s ctr images import /home/head/${TAR_NAME}"
+ssh head@${WORKER_IP} << 'EOF'
+    sudo -S k3s ctr images import /home/head/${TAR_NAME}
+EOF
 kill $! 2>/dev/null
 
 # Restart deployment
 echo "Restarting deployment for pod distribution..."
 loading_bar 0.1 "Restarting deployment" &
-ssh head@${MASTER_IP} "
-    sudo kubectl rollout restart deployment webapp && \
-    echo 'Waiting for pods to stabilize...' && \
-    sleep 5 && \
-    sudo kubectl get pods -o wide"
+ssh head@${MASTER_IP} << 'EOF'
+    sudo -S kubectl rollout restart deployment webapp
+    echo 'Waiting for pods to stabilize...'
+    sleep 5
+    sudo -S kubectl get pods -o wide
+EOF
 kill $! 2>/dev/null
 
 # Cleanup on all nodes
 echo "Cleaning up..."
-rm ${TAR_NAME} webd.yaml
-ssh head@${WORKER_IP} "rm /home/head/${TAR_NAME}"
-ssh head@${MASTER_IP} "rm /home/head/${TAR_NAME}"
+sudo rm ${TAR_NAME} webd.yaml
+ssh head@${WORKER_IP} "sudo -S rm /home/head/${TAR_NAME}"
+ssh head@${MASTER_IP} "sudo -S rm /home/head/${TAR_NAME}"
 
 echo "Deployment completed successfully!"
