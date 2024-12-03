@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: webapp:latest  # Local image name
+        imagePullPolicy: Never    # Use the local image
+        env:
+          - name: MYSQL_HOST
+            value: "10.10.29.219"  # Adjust as necessary
+          - name: MYSQL_PORT
+            value: "3306"  # Specify the port number (default is 3306)
+          - name: MYSQL_USER
+            value: "deplo"
+          - name: MYSQL_PASSWORD
+            value: "thinqclub@inno999"
+          - name: MYSQL_DATABASE
+            value: "innovationclub"
+          - name: AUTH_SECRET
+            value: "2e0OnNupOdAnEEpaNdEuDayipPa2476h99i2"
+          - name: JWT_SECRET
+            value: "290OnNupOdAnEEpaNdEuDayipPa256689952"
+          #- name: NODE_ENV
+          #  value: "production"
+          - name: NEXTAUTH_URL
+            value: "https://duk.ac.in/innovations"  # Adjust as necessary
+          - name: NEXTAUTH_SECRET
+            value: "2e0OnNupOdAnEEpaNdEuDayipPa2476h99i2"
+        ports:
+          - containerPort: 3000
+        resources:
+          requests:
+            memory: "1Gi"  # Minimum memory requested
+            cpu: "500m"    # Minimum CPU requested
+          limits:
+            memory: "5Gi"  # Maximum memory limit
+            cpu: "2000m"       # Maximum CPU limit
+
+
