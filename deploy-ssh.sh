@@ -21,11 +21,11 @@ loading_bar() {
     printf "\n"
 }
 
-# Build the Docker image
-echo "Building Docker image..."
-loading_bar 0.1 "Building image" &
-sudo docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-kill $! 2>/dev/null
+# # Build the Docker image
+# echo "Building Docker image..."
+# loading_bar 0.1 "Building image" &
+# sudo docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+# kill $! 2>/dev/null
 
 # Save the Docker image
 echo "Saving Docker image to tar file..."
