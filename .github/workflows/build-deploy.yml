@@ -1,0 +1,18 @@
+name: Build and Deploy to K3s
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: self-hosted    # This ensures it runs on your pi02 runner
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Image
+        run: |
+          docker build -t myapp:${{ github.sha }} .
+          
+      - name: Import to K3s
+        run: |
+          docker save myapp:${{ github.sha }} | sudo k3s ctr images import -
