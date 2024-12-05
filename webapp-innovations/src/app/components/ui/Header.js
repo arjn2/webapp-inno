@@ -80,7 +80,7 @@ export default function Header() {
                                     >
                                         <NavigationMenuLink
                                             className={navigationMenuTriggerStyle()}
-                                        >   Home
+                                        >   Home switch
                                         </NavigationMenuLink>
                                     </Link>
                                 </NavigationMenuItem>
