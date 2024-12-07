@@ -5,14 +5,23 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted    # This ensures it runs on your pi02 runner
+    runs-on: self-hosted    # Running on Pi02 runner
     steps:
       - uses: actions/checkout@v4
       
+      - name: Navigate to correct directory
+        run: cd webapp-innovations
+      
       - name: Build Image
+        working-directory: ./webapp-innovations
         run: |
-          docker build -t myapp:${{ github.sha }} .
+          docker build -t webapp-credits:${{ github.sha }} .
           
       - name: Import to K3s
         run: |
-          docker save myapp:${{ github.sha }} | sudo k3s ctr images import -
+          docker save webapp-credits:${{ github.sha }} | sudo k3s ctr images import -
+          
+      - name: Deploy to K3s
+        run: |
+          sudo kubectl delete deployment webapp --ignore-not-found=true
+          sudo kubectl apply -f webd.yaml
