@@ -1,10 +1,9 @@
 FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+WORKDIR /usr/src/app
+COPY ..
 RUN npm install sharp
 RUN npx update-browserslist-db@latest
-COPY . .
+RUN npm run audit fix
 RUN npm run build
 EXPOSE 3000
 CMD ["npm","run","start"]
