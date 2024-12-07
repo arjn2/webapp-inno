@@ -1,6 +1,6 @@
 FROM node:20-alpine
 WORKDIR /usr/src/app
-COPY ..
+COPY . .
 RUN npm install sharp
 RUN npx update-browserslist-db@latest
 RUN npm run audit fix
