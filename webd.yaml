@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: webapp:latest  # Local image name
-        imagePullPolicy: Never    # Use the local image
+        image: registry.local:5000/webapp:latest
+        imagePullPolicy: Always    # Use the local image
         env:
           - name: MYSQL_HOST
             value: "10.10.29.219"  # Adjust as necessary
@@ -31,12 +31,12 @@ spec:
             value: "2e0OnNupOdAnEEpaNdEuDayipPa2476h99i2"
           - name: JWT_SECRET
             value: "290OnNupOdAnEEpaNdEuDayipPa256689952"
-          #- name: NODE_ENV
-          #  value: "production"
           - name: NEXTAUTH_URL
             value: "https://duk.ac.in/innovations"  # Adjust as necessary
           - name: NEXTAUTH_SECRET
             value: "2e0OnNupOdAnEEpaNdEuDayipPa2476h99i2"
+          - name: SHEET_ID
+            value: "1YCtLPY54GkggH25z-V5zH_OUP3UcBqpPQyXjWkBwLes"
         ports:
           - containerPort: 3000
         resources:
@@ -46,5 +46,4 @@ spec:
           limits:
             memory: "5Gi"  # Maximum memory limit
             cpu: "2000m"       # Maximum CPU limit
-
 
